@@ -8,6 +8,8 @@ const Container = styled.div`
   flex-direction: column;
   gap: 16px;
   margin-top: 32px;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Input = styled.input`

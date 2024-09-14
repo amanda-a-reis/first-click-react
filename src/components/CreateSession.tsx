@@ -5,30 +5,42 @@ import CopyText from "./CopyText";
 
 const Container = styled.div`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 16px;
+  margin-top: 48px;
 `;
 
 const SectionsContainer = styled.div`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 32px;
 `;
 
 const CreateSectionContainer = styled.div`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  justify-content: center;
   align-items: center;
+  gap: 8px;
 `;
 
 const EnterSectionContainer = styled.div`
   width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 16px;
 `;
 
@@ -148,9 +160,9 @@ const CreateSession = (props: CreateSessionProps) => {
 
   const onSessionIdInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (errorMsg) {
-      setErrorMsg("")
+      setErrorMsg("");
     }
-    
+
     setSessionIdForm(e.target.value);
   };
 

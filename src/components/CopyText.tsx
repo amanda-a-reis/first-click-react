@@ -11,7 +11,7 @@ const CopiableText = styled.span<{ copied: boolean }>`
   background-color: #f0f0f0;
   color: black;
   position: relative;
-  padding: 5px;
+  padding: 4px 8px;
   transition: background-color 0.3s ease, color 0.3s ease;
   border-radius: 8px;
 

@@ -14,9 +14,9 @@ const RoundRedButton = styled.button`
   background-color: #db2e28;
   color: white;
   border: none;
-  border-radius: 50%;
-  width: 200px;
-  height: 200px;
+  border-radius: 8px;
+  width: 100%;
+  height: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -72,7 +72,7 @@ const FirstClickButton = (props: FirstClickButtonProps) => {
         className={firstPlayer ? "disabled" : ""}
         disabled={!!firstPlayer}
       >
-        Clicar
+        EU SEI A RESPOSTA!
       </RoundRedButton>
 
       {error && <p>{error}</p>}

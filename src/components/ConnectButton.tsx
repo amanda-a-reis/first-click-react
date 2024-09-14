@@ -3,6 +3,16 @@ import { memo, useCallback, useState } from "react";
 import NickName from "./Nickname";
 import styled from "styled-components";
 
+const Container = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+`;
+
 const ButtonContainer = styled.div`
   margin-top: 24px;
 `;
@@ -104,7 +114,7 @@ const ConnectButton = (props: ConnectButtonProps) => {
   }, [apiUrl, sessionId, nickName, handleConnect]);
 
   return (
-    <>
+    <Container>
       <NickName
         nickName={nickName}
         handleNickName={handleNickName}
@@ -117,7 +127,7 @@ const ConnectButton = (props: ConnectButtonProps) => {
       </ButtonContainer>
 
       {!!errorMsg && <p>{errorMsg}</p>}
-    </>
+    </Container>
   );
 };
 

@@ -30,7 +30,7 @@ const ResetRound = (props: ResetRoundProps) => {
 
   return (
     <>
-      <button onClick={handleClick}>Resetar round</button>
+      <button onClick={handleClick}>Recomeçar</button>
 
       {error && <p>{error}</p>}
     </>

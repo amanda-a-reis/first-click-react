@@ -7,8 +7,23 @@ import styled from "styled-components";
 import CopyText from "./CopyText";
 
 const Container = styled.div`
-  width: 80vw;
-  height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: auto;
+  align-items: center;
+  justify-content: center;
+  padding-top: 16px;
+`;
+
+const ContainerNotConnected = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  position: absolute;
+  top: 5%;
+  left: 0;
+  padding-bottom: 48px;
 `;
 
 const Content = styled.div`
@@ -22,7 +37,10 @@ const PlayersContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  margin-top: 32px;
+  margin-top: 48px;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 200px;
 `;
 
 const PlayerContainer = styled.div`
@@ -31,7 +49,7 @@ const PlayerContainer = styled.div`
 `;
 
 const SectionsContainer = styled.div`
-  width: 250px;
+  width: auto;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -50,6 +68,13 @@ const BigImage = styled.img`
   width: 200px;
   height: 200px;
   object-fit: cover;
+`;
+
+const FirstClickButtonContainer = styled.div`
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  padding: 8px;
 `;
 
 const apiUrl = "https://positive-sunny-iodine.glitch.me";
@@ -79,7 +104,7 @@ const Page = () => {
 
     ws.onmessage = (event) => {
       const parsedData = JSON.parse(event.data);
-      
+
       const players = parsedData?.players ?? [];
 
       setPlayers(players);
@@ -97,7 +122,7 @@ const Page = () => {
   return (
     <div>
       {!isConnected && (
-        <>
+        <ContainerNotConnected>
           <CreateSession handleSessionId={handleSessionId} apiUrl={apiUrl} />
 
           {sessionId && (
@@ -108,7 +133,7 @@ const Page = () => {
               apiUrl={apiUrl}
             />
           )}
-        </>
+        </ContainerNotConnected>
       )}
 
       {isConnected && sessionId && (
@@ -129,7 +154,7 @@ const Page = () => {
                     <BigImage src={Object.values(player)[0]} />
                     <h2>{Object.keys(player)[0]}</h2>
                   </PlayerContainer>
-                )
+                );
               } else {
                 return (
                   <PlayerContainer>
@@ -141,11 +166,13 @@ const Page = () => {
             })}
           </PlayersContainer>
 
-          <FirstClickButton
-            sessionId={sessionId}
-            apiUrl={apiUrl}
-            firstPlayer={firstPlayer}
-          />
+          <FirstClickButtonContainer>
+            <FirstClickButton
+              sessionId={sessionId}
+              apiUrl={apiUrl}
+              firstPlayer={firstPlayer}
+            />
+          </FirstClickButtonContainer>
         </Container>
       )}
     </div>
