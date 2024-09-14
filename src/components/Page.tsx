@@ -4,8 +4,8 @@ import ConnectButton from "./ConnectButton";
 import NickName from "./Nickname";
 import FirstClickButton from "./FirstClickButton";
 
-const apiUrl = "http://localhost:3001";
-const webSocketUrl = "ws://localhost:3001";
+const apiUrl = "https://halved-meadow-sign.glitch.me";
+const webSocketUrl = "wss://halved-meadow-sign.glitch.me";
 
 const Page = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
