@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 
 interface FirstClickButton {
@@ -16,22 +17,19 @@ const FirstClickButton = (props: FirstClickButton) => {
   const handleClick = async () => {
     console.log("dataToSend", dataToSend);
 
-    try {
-      const response = await fetch(`${apiUrl}/click`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "user-agent": "Mozilla",
-        },
-        body: JSON.stringify({
-          sessionId: dataToSend.sessionId,
-          nickname: dataToSend.nickName,
-        }),
-      });
+    const nickNameFromLocalStorage = localStorage.getItem("nickname");
 
-      if (!response.ok) {
-        throw new Error("Erro na requisição");
-      }
+    try {
+      await axios.post(
+        `${apiUrl}/click`,
+        { sessionId: dataToSend.sessionId, nickname: nickNameFromLocalStorage },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "user-agent": "Mozilla",
+          },
+        }
+      );
     } catch (error) {
       if (error) setError("Erro na requisição");
     }

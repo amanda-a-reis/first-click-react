@@ -1,15 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import CreateSession from "./CreateSession";
 import ConnectButton from "./ConnectButton";
 import NickName from "./Nickname";
 import FirstClickButton from "./FirstClickButton";
+import ResetRound from "./ResetRound";
 
-const apiUrl = "https://simplistic-stormy-brontomerus.glitch.me";
-const webSocketUrl = "wss://simplistic-stormy-brontomerus.glitch.me";
+const apiUrl = "https://positive-sunny-iodine.glitch.me";
+const webSocketUrl = "wss://positive-sunny-iodine.glitch.me";
 
 const Page = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [data, setData] = useState("");
+  const [players, setPlayers] = useState<string[]>([]);
+  const [firstPlayer, setFirstPlayer] = useState<string>("");
 
   const [isConnected, setIsConnected] = useState(false);
 
@@ -26,7 +29,15 @@ const Page = () => {
     ws.onmessage = (event) => {
       console.log("event.data", event.data);
 
-      setData(event.data);
+      const parsedData = JSON.parse(event.data);
+
+      const players = parsedData?.players ?? [];
+
+      setPlayers(players);
+
+      const firstPlayer = parsedData?.firstPlayer ?? "";
+
+      setFirstPlayer(firstPlayer);
     };
 
     return () => {
@@ -34,9 +45,11 @@ const Page = () => {
     };
   }, []);
 
+  const isPlayerConnected = isConnected
+
   return (
     <div>
-      {!isConnected && (
+      {!isPlayerConnected && (
         <>
           <CreateSession setDataToSend={setDataToSend} apiUrl={apiUrl} />
 
@@ -48,17 +61,28 @@ const Page = () => {
                 dataToSend={dataToSend}
                 socket={socket}
                 setIsConnected={setIsConnected}
+                apiUrl={apiUrl}
               />
             </>
           )}
         </>
       )}
 
-      {isConnected && dataToSend.sessionId && (
+      {isPlayerConnected && dataToSend.sessionId && (
         <>
-          {data && <h3>{data}</h3>}
+          <label>{dataToSend.sessionId}</label>
+
+          {players.map((player) => {
+            if (player === firstPlayer) {
+              return <h1>{player}</h1>;
+            } else {
+              return <h3>{player}</h3>;
+            }
+          })}
 
           <FirstClickButton dataToSend={dataToSend} apiUrl={apiUrl} />
+
+          <ResetRound sessionId={dataToSend.sessionId} apiUrl={apiUrl} />
         </>
       )}
     </div>

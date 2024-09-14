@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface NickNameProps {
   setDataToSend: any;
@@ -17,13 +17,25 @@ const NickName = (props: NickNameProps) => {
     setDataToSend((prev: any) => ({ ...prev, nickName: value }));
   };
 
+  const nickNameFromLocalStorage = useMemo(() => {
+    const nickNameFromLocalStorage = localStorage.getItem("nickname");
+
+    return nickNameFromLocalStorage;
+  }, []);
+
   return (
     <>
-      <p>Digite seu nickname para conectar: </p>
-      
-      <input onChange={handleNickName} />
+      {!nickNameFromLocalStorage && (
+        <>
+          <p>Digite seu nickname para conectar: </p>
 
-      <p>{nickName}</p>
+          <input onChange={handleNickName} />
+        </>
+      )}
+
+      {!nickNameFromLocalStorage && <p>{nickName}</p>}
+
+      {nickNameFromLocalStorage && <p>{nickNameFromLocalStorage}</p>}
     </>
   );
 };
