@@ -1,21 +1,63 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo } from "react";
+
+import styled from "styled-components";
+
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+`;
+
+const Input = styled.input`
+  width: 280px;
+  height: 28px;
+  padding: 8px;
+  border-radius: 8px;
+  border: solid white 1px;
+  font-size: 16px;
+`;
+
+const Label = styled.label`
+  font-size: 16px;
+  font-weight: 800;
+`;
+
+const Image = styled.img`
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+`;
 
 interface NickNameProps {
-  setDataToSend: any;
+  handleNickName: (nickName: string) => void;
+  nickName: string;
+  handleAvatar: (nickName: string) => void;
+  avatar: string;
 }
 
 const NickName = (props: NickNameProps) => {
-  const { setDataToSend } = props;
-  const [nickName, setNickName] = useState("");
+  const { handleNickName, handleAvatar, avatar } = props;
 
-  const handleNickName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+  const onNickNameInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
 
-    setNickName(value);
+      handleNickName(value);
+    },
+    [handleNickName]
+  );
 
-    setDataToSend((prev: any) => ({ ...prev, nickName: value }));
-  };
+  const onAvatarChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+
+      handleAvatar(value);
+    },
+    [handleAvatar]
+  );
 
   const nickNameFromLocalStorage = useMemo(() => {
     const nickNameFromLocalStorage = localStorage.getItem("nickname");
@@ -27,17 +69,25 @@ const NickName = (props: NickNameProps) => {
     <>
       {!nickNameFromLocalStorage && (
         <>
-          <p>Digite seu nickname para conectar: </p>
+          <Container>
+            <Label>Digite seu nickname para conectar: </Label>
 
-          <input onChange={handleNickName} />
+            <Input onChange={onNickNameInputChange} />
+          </Container>
+
+          <Container>
+            <Label>Escolha seu avatar: </Label>
+
+            <Input onChange={onAvatarChange} />
+          </Container>
         </>
       )}
 
-      {!nickNameFromLocalStorage && <p>{nickName}</p>}
-
       {nickNameFromLocalStorage && <p>{nickNameFromLocalStorage}</p>}
+
+      {avatar && <Image src={avatar} />}
     </>
   );
 };
 
-export default NickName;
+export default memo(NickName);

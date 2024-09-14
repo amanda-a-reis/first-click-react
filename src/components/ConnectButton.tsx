@@ -1,56 +1,88 @@
 import axios, { AxiosError } from "axios";
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
+import NickName from "./Nickname";
+import styled from "styled-components";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+const ButtonContainer = styled.div`
+  margin-top: 24px;
+`;
+
 interface ConnectButtonProps {
-  dataToSend: {
-    sessionId: string;
-    nickName: string;
-  };
-  socket: WebSocket | null;
-  setIsConnected: any;
   apiUrl: string;
+  sessionId: string;
+  socket: WebSocket | null;
+  handleIsConnected: () => void;
 }
+
 const ConnectButton = (props: ConnectButtonProps) => {
-  const { dataToSend, socket, setIsConnected, apiUrl } = props;
+  const { sessionId, socket, handleIsConnected, apiUrl } = props;
 
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleConnect = (nickName: string) => {
-    if (socket) {
-      socket.send(
-        JSON.stringify({
-          sessionId: dataToSend.sessionId,
-          nickname: nickName,
-        })
-      );
+  const [nickName, setNickName] = useState("");
+  const [avatar, setAvatar] = useState("");
 
-      localStorage.setItem("nickname", nickName);
+  const handleNickName = useCallback(
+    (nickName: string) => {
+      if (errorMsg) {
+        setErrorMsg("");
+      }
 
-      setIsConnected(true);
-    }
-  };
+      setNickName(nickName);
+    },
+    [errorMsg]
+  );
 
-  const handleNickNameValidation = async () => {
+  const handleAvatar = useCallback((avatar: string) => {
+    setAvatar(avatar);
+  }, []);
+
+  const handleConnect = useCallback(
+    (nickName: string) => {
+      const avatarPlaceholder =
+        "https://s3.amazonaws.com/comicgeeks/characters/avatars/14250.jpg?t=1659767317";
+
+      let playerAvatar = avatar;
+
+      if (!avatar) {
+        playerAvatar = avatarPlaceholder;
+        handleAvatar(avatarPlaceholder);
+      }
+
+      if (socket) {
+        socket.send(
+          JSON.stringify({
+            sessionId,
+            nickname: nickName,
+            avatar: playerAvatar,
+          })
+        );
+
+        localStorage.setItem("nickname", nickName);
+        localStorage.setItem("avatar", playerAvatar);
+
+        handleIsConnected();
+
+        setErrorMsg("");
+      }
+    },
+    [avatar, socket, handleAvatar, sessionId, handleIsConnected]
+  );
+
+  const handleNickNameAndConnect = useCallback(async () => {
     const nickNameFromLocalStorage = localStorage.getItem("nickname");
 
-    console.log("nickNameFromLocalStorage", nickNameFromLocalStorage)
-
     if (nickNameFromLocalStorage) {
-      setErrorMsg("");
-
       handleConnect(nickNameFromLocalStorage);
 
       return;
     }
 
-    const nickName = dataToSend.nickName;
-
     try {
       await axios.post(
         `${apiUrl}/validate-nickname`,
         {
-          sessionId: dataToSend.sessionId,
+          sessionId,
           nickName,
         },
         {
@@ -69,15 +101,24 @@ const ConnectButton = (props: ConnectButtonProps) => {
 
       setErrorMsg(errMsg);
     }
-  };
+  }, [apiUrl, sessionId, nickName, handleConnect]);
 
   return (
     <>
-      <button onClick={handleNickNameValidation}>Conectar</button>
+      <NickName
+        nickName={nickName}
+        handleNickName={handleNickName}
+        handleAvatar={handleAvatar}
+        avatar={avatar}
+      />
+
+      <ButtonContainer>
+        <button onClick={handleNickNameAndConnect}>Conectar</button>
+      </ButtonContainer>
 
       {!!errorMsg && <p>{errorMsg}</p>}
     </>
   );
 };
 
-export default ConnectButton;
+export default memo(ConnectButton);

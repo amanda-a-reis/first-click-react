@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
 
 interface ResetRoundProps {
   apiUrl: string;
@@ -11,7 +11,7 @@ const ResetRound = (props: ResetRoundProps) => {
 
   const [error, setError] = useState("");
 
-  const handleClick = async () => {
+  const handleClick = useCallback(async () => {
     try {
       await axios.post(
         `${apiUrl}/reset`,
@@ -26,15 +26,15 @@ const ResetRound = (props: ResetRoundProps) => {
     } catch (error) {
       if (error) setError("Erro na requisição");
     }
-  };
+  }, [apiUrl, sessionId]);
 
   return (
     <>
-      <button onClick={handleClick}>Resetar</button>
+      <button onClick={handleClick}>Resetar round</button>
 
       {error && <p>{error}</p>}
     </>
   );
 };
 
-export default ResetRound;
+export default memo(ResetRound);

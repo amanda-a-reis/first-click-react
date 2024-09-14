@@ -1,22 +1,106 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosError } from "axios";
-import { useState } from "react";
+import { memo, useCallback, useState } from "react";
+import styled from "styled-components";
+import CopyText from "./CopyText";
+
+const Container = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const SectionsContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+`;
+
+const CreateSectionContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+`;
+
+const EnterSectionContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`;
+
+const Input = styled.input`
+  width: 280px;
+  height: 28px;
+  padding: 8px;
+  border-radius: 8px;
+  border: solid white 1px;
+  font-size: 16px;
+`;
+
+const Label = styled.label`
+  font-size: 16px;
+  font-weight: 800;
+`;
+
+const Divider = styled.div`
+  width: 280px;
+  border: solid gray 1px;
+`;
+
+const CurrentSessionContainer = styled.div`
+  width: 100%;
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const Text = styled.p`
+  margin: 0;
+  font-size: 24px;
+
+  &.isBold {
+    font-weight: 800;
+  }
+`;
 
 interface CreateSessionProps {
-  setDataToSend: any;
+  handleSessionId: (sessionId: string) => void;
   apiUrl: string;
 }
 
 const CreateSession = (props: CreateSessionProps) => {
-  const { setDataToSend, apiUrl } = props;
+  const { handleSessionId, apiUrl } = props;
 
-  const [sessionId, setSessionId] = useState<string>();
-
+  const [sessionIdForm, setSessionIdForm] = useState<string>();
+  const [hasSession, setHasSession] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string>("");
 
-  const [hasSession, setHasSession] = useState<boolean>(false);
+  const handleSuccess = useCallback(
+    (sessionId: string) => {
+      handleSessionId(sessionId);
+      setSessionIdForm(sessionId);
 
-  const create = async () => {
+      setErrorMsg("");
+      setHasSession(true);
+    },
+    [handleSessionId]
+  );
+
+  const handleError = useCallback((error: unknown) => {
+    const err = error as AxiosError<{ message: string }>;
+
+    const errorMsg = err.response?.data?.message ?? "";
+
+    setErrorMsg(errorMsg);
+    setHasSession(false);
+  }, []);
+
+  const createSession = useCallback(async () => {
     if (!hasSession) {
       try {
         const response = await axios.post(
@@ -30,37 +114,21 @@ const CreateSession = (props: CreateSessionProps) => {
           }
         );
 
-        const data = response.data;
+        const createdSessionId = response.data.sessionId;
 
-        const sessionId = data.sessionId;
-
-        setDataToSend((prev: any) => ({ ...prev, sessionId }));
-
-        setSessionId(sessionId);
-
-        setHasSession(true);
-
-        setErrorMsg("");
+        handleSuccess(createdSessionId);
       } catch (error) {
-        console.log(error);
-
-        setHasSession(false);
+        handleError(error);
       }
     }
-  };
+  }, [apiUrl, handleError, handleSuccess, hasSession]);
 
-  const handleExistentSession = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const sessionId = e.target.value;
-
-    setSessionId(sessionId);
-  };
-
-  const enterExistentSession = async () => {
+  const enterExistentSession = useCallback(async () => {
     try {
       await axios.post(
         `${apiUrl}/enter-session`,
         {
-          sessionId,
+          sessionId: sessionIdForm,
         },
         {
           headers: {
@@ -70,39 +138,51 @@ const CreateSession = (props: CreateSessionProps) => {
         }
       );
 
-      setDataToSend((prev: any) => ({ ...prev, sessionId }));
-
-      setHasSession(true);
-
-      setErrorMsg("");
+      if (sessionIdForm) {
+        handleSuccess(sessionIdForm);
+      }
     } catch (error) {
-      const err = error as AxiosError<{ message: string }>;
-
-      const errorMsg = err.response?.data?.message ?? "";
-
-      setErrorMsg(errorMsg);
-
-      setHasSession(false);
+      handleError(error);
     }
+  }, [apiUrl, handleError, handleSuccess, sessionIdForm]);
+
+  const onSessionIdInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (errorMsg) {
+      setErrorMsg("")
+    }
+    
+    setSessionIdForm(e.target.value);
   };
 
   return (
-    <>
+    <Container>
       {!hasSession && (
-        <>
-          <button onClick={create}>Criar sessão</button>
+        <SectionsContainer>
+          <CreateSectionContainer>
+            <Label>Crie uma nova sessão </Label>
+            <button onClick={createSession}>Criar sessão</button>
+          </CreateSectionContainer>
 
-          <label>Digite a sessão para entrar: </label>
-          <input onChange={handleExistentSession} />
-          <button onClick={enterExistentSession}>Entrar</button>
-        </>
+          <Divider />
+
+          <EnterSectionContainer>
+            <Label>Ou então digite a sessão para entrar: </Label>
+            <Input onChange={onSessionIdInputChange} />
+            <button onClick={enterExistentSession}>Entrar</button>
+          </EnterSectionContainer>
+        </SectionsContainer>
       )}
 
       {!!errorMsg && <p>{errorMsg}</p>}
 
-      {hasSession && <h2>Sessão criada: {sessionId}</h2>}
-    </>
+      {hasSession && !!sessionIdForm && (
+        <CurrentSessionContainer>
+          <Text>Sessão atual</Text>
+          <CopyText text={sessionIdForm} />
+        </CurrentSessionContainer>
+      )}
+    </Container>
   );
 };
 
-export default CreateSession;
+export default memo(CreateSession);
