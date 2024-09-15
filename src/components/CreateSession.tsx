@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import CopyText from "./CopyText";
 
@@ -99,6 +99,7 @@ const CreateSession = (props: CreateSessionProps) => {
 
       setErrorMsg("");
       setHasSession(true);
+      localStorage.setItem("sessionId", sessionId);
     },
     [handleSessionId]
   );
@@ -165,6 +166,14 @@ const CreateSession = (props: CreateSessionProps) => {
 
     setSessionIdForm(e.target.value);
   };
+
+  useEffect(() => {
+    const localStorageSessionId = localStorage.getItem("sessionId");
+
+    if (localStorageSessionId) {
+      handleSuccess(localStorageSessionId);
+    }
+  }, [handleSuccess]);
 
   return (
     <Container>

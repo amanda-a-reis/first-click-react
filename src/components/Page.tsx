@@ -83,8 +83,8 @@ const DisconnectButtonContainer = styled.div`
   margin-top: 8px;
 `;
 
-const apiUrl = "https://positive-sunny-iodine.glitch.me";
-const webSocketUrl = "wss://positive-sunny-iodine.glitch.me";
+const apiUrl = "https://brassy-seed-opossum.glitch.me";
+const webSocketUrl = "wss://brassy-seed-opossum.glitch.me";
 
 const Page = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -108,6 +108,7 @@ const Page = () => {
     setSessionId("");
     localStorage.setItem("nickname", "");
     localStorage.setItem("avatar", "");
+    localStorage.setItem("sessionId", "");
   }, []);
 
   const handleDisconnect = useCallback(async () => {
