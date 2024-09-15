@@ -112,25 +112,25 @@ const Page = () => {
   }, []);
 
   const handleDisconnect = useCallback(async () => {
-    alert("Tem certeza que deseja desconectar?");
+    if (confirm("Tem certeza que deseja desconectar?")) {
+      const playerToDisconnect = localStorage.getItem("nickname");
 
-    const playerToDisconnect = localStorage.getItem("nickname");
+      try {
+        await axios.post(
+          `${apiUrl}/disconnect`,
+          { sessionId, nickname: playerToDisconnect },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "user-agent": "Mozilla",
+            },
+          }
+        );
 
-    try {
-      await axios.post(
-        `${apiUrl}/disconnect`,
-        { sessionId, nickname: playerToDisconnect },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            "user-agent": "Mozilla",
-          },
-        }
-      );
-
-      clearSession()
-    } catch (error) {
-      console.log(error);
+        clearSession();
+      } catch (error) {
+        console.log(error);
+      }
     }
   }, [sessionId, clearSession]);
 
