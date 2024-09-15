@@ -52,11 +52,18 @@ const ConnectButton = (props: ConnectButtonProps) => {
       const avatarPlaceholder =
         "https://s3.amazonaws.com/comicgeeks/characters/avatars/14250.jpg?t=1659767317";
 
+      const avatarFromLocalStorage = localStorage.getItem("avatar")
+
       let playerAvatar = avatar;
 
-      if (!avatar) {
+      if (!avatar && !avatarFromLocalStorage) {
         playerAvatar = avatarPlaceholder;
         handleAvatar(avatarPlaceholder);
+      }
+
+      if (avatarFromLocalStorage) {
+        playerAvatar = avatarFromLocalStorage;
+        handleAvatar(avatarFromLocalStorage);
       }
 
       if (socket) {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback } from "react";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -42,8 +42,6 @@ interface FirstClickButtonProps {
 const FirstClickButton = (props: FirstClickButtonProps) => {
   const { apiUrl, sessionId, firstPlayer } = props;
 
-  const [error, setError] = useState("");
-
   const handleClick = useCallback(async () => {
     const nickNameFromLocalStorage = localStorage.getItem("nickname");
 
@@ -59,7 +57,11 @@ const FirstClickButton = (props: FirstClickButtonProps) => {
         }
       );
     } catch (error) {
-      if (error) setError("Erro na requisição");
+      if(error) {
+        alert("Você precisa reconectar")
+
+        window.location.reload()
+      }
     }
   }, [apiUrl, sessionId]);
 
@@ -72,8 +74,6 @@ const FirstClickButton = (props: FirstClickButtonProps) => {
       >
         EU SEI A RESPOSTA!
       </RoundRedButton>
-
-      {error && <p>{error}</p>}
     </Container>
   );
 };
