@@ -83,8 +83,8 @@ const DisconnectButtonContainer = styled.div`
   margin-top: 8px;
 `;
 
-const apiUrl = "https://brassy-seed-opossum.glitch.me";
-const webSocketUrl = "wss://brassy-seed-opossum.glitch.me";
+const apiUrl = "https://alert-marshy-ticket.glitch.me";
+const webSocketUrl = "wss://alert-marshy-ticket.glitch.me";
 
 const Page = () => {
   const [socket, setSocket] = useState<WebSocket | null>(null);
@@ -149,6 +149,32 @@ const Page = () => {
       const firstPlayer = parsedData?.firstPlayer ?? "";
 
       setFirstPlayer(firstPlayer);
+    };
+
+    ws.onclose = () => {
+      setIsConnected(false);
+      setFirstPlayer("");
+      setPlayers([])
+    };
+
+    ws.onopen = () => {
+      setSocket(ws);
+
+      const nickName = localStorage.getItem("nickname");
+      const avatar = localStorage.getItem("avatar");
+      const sessionId = localStorage.getItem("sessionId");
+
+      if (nickName && avatar && sessionId) {
+        ws.send(
+          JSON.stringify({
+            sessionId,
+            nickname: nickName,
+            avatar,
+          })
+        );
+
+        setIsConnected(true);
+      }
     };
 
     return () => {

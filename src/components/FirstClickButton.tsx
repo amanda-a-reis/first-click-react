@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { memo, useCallback } from "react";
 import styled from "styled-components";
 
@@ -57,10 +57,12 @@ const FirstClickButton = (props: FirstClickButtonProps) => {
         }
       );
     } catch (error) {
-      if(error) {
-        alert("Você precisa reconectar")
+      const err = error as AxiosError<{ message: string }>;
 
-        window.location.reload()
+      if (err.response?.data.message === "disconnected") {
+        alert("Você precisa reconectar");
+
+        window.location.reload();
       }
     }
   }, [apiUrl, sessionId]);

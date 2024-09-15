@@ -52,7 +52,7 @@ const ConnectButton = (props: ConnectButtonProps) => {
       const avatarPlaceholder =
         "https://s3.amazonaws.com/comicgeeks/characters/avatars/14250.jpg?t=1659767317";
 
-      const avatarFromLocalStorage = localStorage.getItem("avatar")
+      const avatarFromLocalStorage = localStorage.getItem("avatar");
 
       let playerAvatar = avatar;
 
@@ -78,9 +78,10 @@ const ConnectButton = (props: ConnectButtonProps) => {
         localStorage.setItem("nickname", nickName);
         localStorage.setItem("avatar", playerAvatar);
 
-        handleIsConnected();
-
         setErrorMsg("");
+
+        window.location.reload();
+        handleIsConnected();
       }
     },
     [avatar, socket, handleAvatar, sessionId, handleIsConnected]
