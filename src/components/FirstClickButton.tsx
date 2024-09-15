@@ -29,9 +29,7 @@ const RoundRedButton = styled.button`
   }
 
   &.disabled {
-    background-color: #e8e8f5;
-    color: black;
-    cursor: unset;
+    display: none;
   }
 `;
 
