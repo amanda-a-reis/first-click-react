@@ -1,5 +1,10 @@
 import axios from "axios";
 import { memo, useCallback, useState } from "react";
+import styled from "styled-components";
+
+const ResetButtonContainer = styled.div`
+  height: 40px;
+`;
 
 interface ResetRoundProps {
   apiUrl: string;
@@ -30,7 +35,9 @@ const ResetRound = (props: ResetRoundProps) => {
 
   return (
     <>
-      <button onClick={handleClick}>Recomeçar</button>
+      <ResetButtonContainer>
+        <button onClick={handleClick}>Recomeçar</button>
+      </ResetButtonContainer>
 
       {error && <p>{error}</p>}
     </>

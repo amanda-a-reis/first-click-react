@@ -5,6 +5,7 @@ import FirstClickButton from "./FirstClickButton";
 import ResetRound from "./ResetRound";
 import styled from "styled-components";
 import CopyText from "./CopyText";
+import axios from "axios";
 
 const Container = styled.div`
   display: flex;
@@ -77,6 +78,11 @@ const FirstClickButtonContainer = styled.div`
   padding: 8px;
 `;
 
+const DisconnectButtonContainer = styled.div`
+  width: 100%;
+  margin-top: 8px;
+`;
+
 const apiUrl = "https://positive-sunny-iodine.glitch.me";
 const webSocketUrl = "wss://positive-sunny-iodine.glitch.me";
 
@@ -96,6 +102,36 @@ const Page = () => {
   const handleSessionId = useCallback((sessionId: string) => {
     setSessionId(sessionId);
   }, []);
+
+  const clearSession = useCallback(() => {
+    setIsConnected(false);
+    setSessionId("");
+    localStorage.setItem("nickname", "");
+    localStorage.setItem("avatar", "");
+  }, []);
+
+  const handleDisconnect = useCallback(async () => {
+    alert("Tem certeza que deseja desconectar?");
+
+    const playerToDisconnect = localStorage.getItem("nickname");
+
+    try {
+      await axios.post(
+        `${apiUrl}/disconnect`,
+        { sessionId, nickname: playerToDisconnect },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "user-agent": "Mozilla",
+          },
+        }
+      );
+
+      clearSession()
+    } catch (error) {
+      console.log(error);
+    }
+  }, [sessionId, clearSession]);
 
   useEffect(() => {
     const ws = new WebSocket(webSocketUrl);
@@ -142,6 +178,10 @@ const Page = () => {
             <SectionsContainer>
               <label>Sessão atual</label>
               <CopyText text={sessionId} />
+
+              <DisconnectButtonContainer>
+                <button onClick={handleDisconnect}>Desconectar</button>
+              </DisconnectButtonContainer>
             </SectionsContainer>
             <ResetRound sessionId={sessionId} apiUrl={apiUrl} />
           </Content>
